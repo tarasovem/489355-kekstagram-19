@@ -8,6 +8,7 @@ var MESSAGES_LIST = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
+
 var NAME_LIST = [
   'Артем',
   'Михаил',
@@ -20,16 +21,20 @@ var NAME_LIST = [
   'Роман',
   'Антон'
 ];
+
 var similarPictureTemplate = document.querySelector('#picture')
   .content
   .querySelector('.picture');
 
 var similarPictureList = document.querySelector('.pictures');
+
 var getRandomNubmer = function (min, max) {
   var number = min + Math.random() * (max + 1 - min);
   return Math.floor(number);
 };
+
 var messageAmount = getRandomNubmer(1, 2);
+
 var getMessage = function (amount) {
   var messages = [];
 
@@ -66,7 +71,7 @@ var renderPicture = function (element) {
 
   pictureElement.querySelector('.picture__img').setAttribute('src', element.url);
   pictureElement.querySelector('.picture__likes').textContent = element.likes;
-  pictureElement.querySelector('.picture__comments').textContent = String(element.comments[0].message.length);
+  pictureElement.querySelector('.picture__comments').textContent = element.comments[0].message.length.toString();
 
   return pictureElement;
 };
