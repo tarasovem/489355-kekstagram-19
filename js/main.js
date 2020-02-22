@@ -85,4 +85,41 @@ var renderPictureList = function (list) {
 
 renderPictureList(similarPictureList);
 
+// Загрузка изображения
+var ESC_KEY = 'Escape';
+
+var uploadFileButton = document.querySelector('#upload-file');
+var uploadCancelButton = document.querySelector('#upload-cancel');
+var uploadWindow = document.querySelector('.img-upload__overlay');
+var body = document.body;
+
+var openUploadWindow = function () {
+  uploadWindow.classList.remove('hidden');
+  body.classList.add('modal-open');
+  document.addEventListener('keydown', onUploadWindowEscPress);
+};
+
+var closeUploadWindow = function () {
+  uploadWindow.classList.add('hidden');
+  body.classList.remove('modal-open');
+  uploadFileButton.value = '';
+  document.removeEventListener('keydown', onUploadWindowEscPress);
+};
+
+var onUploadFileChange = function () {
+  openUploadWindow();
+};
+
+var onUploadCloseButtonClick = function () {
+  closeUploadWindow();
+};
+
+var onUploadWindowEscPress = function (evt) {
+  if (evt.key === ESC_KEY) {
+    closeUploadWindow();
+  }
+};
+
+uploadFileButton.addEventListener('change', onUploadFileChange);
+uploadCancelButton.addEventListener('click', onUploadCloseButtonClick);
 
