@@ -85,7 +85,7 @@ var renderPictureList = function (list) {
 
 renderPictureList(similarPictureList);
 
-// Загрузка изображения
+// Открытие/закрытие окна загрузки изображений
 var ESC_KEY = 'Escape';
 
 var uploadFileButton = document.querySelector('#upload-file');
@@ -123,3 +123,33 @@ var onUploadWindowEscPress = function (evt) {
 uploadFileButton.addEventListener('change', onUploadFileChange);
 uploadCancelButton.addEventListener('click', onUploadCloseButtonClick);
 
+// Наложение эффекта на изображение
+var uploadImage = document.querySelector('.img-upload__preview img');
+var effectsList = document.querySelector('.effects__list');
+var effectLevel = document.querySelector('.img-upload__effect-level');
+
+var hideEffectLevel = function () {
+  effectLevel.classList.add('hidden');
+};
+
+var showEffectLevel = function () {
+  effectLevel.classList.remove('hidden');
+};
+
+var onEffectListChange = function (evt) {
+  var target = evt.target;
+  var value = target.value;
+
+  uploadImage.removeAttribute('class');
+
+  if (value !== 'none') {
+    uploadImage.classList.add('effects__preview--' + value);
+    showEffectLevel();
+  } else {
+    hideEffectLevel();
+  }
+};
+
+hideEffectLevel();
+
+effectsList.addEventListener('change', onEffectListChange);
