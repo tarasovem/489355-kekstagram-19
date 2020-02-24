@@ -127,6 +127,8 @@ uploadCancelButton.addEventListener('click', onUploadCloseButtonClick);
 var uploadImage = document.querySelector('.img-upload__preview img');
 var effectsList = document.querySelector('.effects__list');
 var effectLevel = document.querySelector('.img-upload__effect-level');
+var effectLevelContainer = document.querySelector('.effect-level__line');
+var effectLevelPin = document.querySelector('.effect-level__pin');
 
 var hideEffectLevel = function () {
   effectLevel.classList.add('hidden');
@@ -141,6 +143,7 @@ var onEffectListChange = function (evt) {
   var value = target.value;
 
   uploadImage.removeAttribute('class');
+  uploadImage.removeAttribute('style');
 
   if (value !== 'none') {
     uploadImage.classList.add('effects__preview--' + value);
@@ -150,6 +153,66 @@ var onEffectListChange = function (evt) {
   }
 };
 
+var onEffectLevelPinMouseup = function (evt) {
+  var target = evt.target;
+  var width = getComputedStyle(target).left.slice(0, -2);
+  var maxWidth = getComputedStyle(effectLevelContainer).width.slice(0, -2);
+  var minEffectValue;
+  var maxEffectValue;
+  var currentEffectValue;
+  var precision;
+  var postfix = '';
+  var effectName;
+
+  var currentEffect = uploadImage.getAttribute('class');
+
+  switch (currentEffect) {
+    case 'effects__preview--chrome':
+      minEffectValue = 0;
+      maxEffectValue = 1;
+      precision = 2;
+      effectName = 'grayscale';
+      break;
+
+    case 'effects__preview--sepia':
+      minEffectValue = 0;
+      maxEffectValue = 1;
+      precision = 2;
+      effectName = 'sepia';
+      break;
+
+    case 'effects__preview--marvin':
+      minEffectValue = 0;
+      maxEffectValue = 100;
+      postfix = '%';
+      precision = 0;
+      effectName = 'invert';
+      break;
+
+    case 'effects__preview--phobos':
+      minEffectValue = 1;
+      maxEffectValue = 3;
+      precision = 1;
+      postfix = 'px';
+      effectName = 'blur';
+      break;
+
+    case 'effects__preview--heat':
+      minEffectValue = 1;
+      maxEffectValue = 3;
+      precision = 2;
+      effectName = 'brightness';
+      break;
+  }
+
+  currentEffectValue = ((width * (maxEffectValue - minEffectValue) / maxWidth) + minEffectValue).toFixed(precision);
+
+  uploadImage.style.filter = effectName + '(' + currentEffectValue + postfix + ')';
+};
+
 hideEffectLevel();
 
 effectsList.addEventListener('change', onEffectListChange);
+
+effectLevelPin.addEventListener('mouseup', onEffectLevelPinMouseup);
+
