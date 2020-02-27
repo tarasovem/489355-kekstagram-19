@@ -272,7 +272,7 @@ var createValidityMessages = function (notEmptyHashtags) {
   return validityMessages;
 };
 
-var hashtagsKeyupHandler = function () {
+var onHashtagsKeyup = function () {
   var inputValue = hashtagsInput.value.toLowerCase();
   var dirtyHashtags = createHashtags(inputValue);
   var cleanHashtags = removeAdditionalSpaces(dirtyHashtags);
@@ -285,4 +285,4 @@ var hashtagsKeyupHandler = function () {
   }
 };
 
-hashtagsInput.addEventListener('keyup', hashtagsKeyupHandler);
+hashtagsInput.addEventListener('keyup', onHashtagsKeyup);
