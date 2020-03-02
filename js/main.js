@@ -91,6 +91,7 @@ var ESC_KEY = 'Escape';
 var uploadFileButton = document.querySelector('#upload-file');
 var uploadCancelButton = document.querySelector('#upload-cancel');
 var uploadWindow = document.querySelector('.img-upload__overlay');
+var uploadImage = document.querySelector('.img-upload__preview img');
 var body = document.body;
 
 var openUploadWindow = function () {
@@ -123,8 +124,61 @@ var onUploadWindowEscPress = function (evt) {
 uploadFileButton.addEventListener('change', onUploadFileChange);
 uploadCancelButton.addEventListener('click', onUploadCloseButtonClick);
 
+// Изменение масштаба изображения
+
+var SCALE_STEP = 25;
+var SCALE_MIN_VALUE = 25;
+var SCALE_MAX_VALUE = 100;
+var SCALE_DEFAULT_VALUE = 100;
+
+var scaleInput = uploadWindow.querySelector('.scale__control--value');
+var scaleDecreaseButton = uploadWindow.querySelector('.scale__control--smaller');
+var scaleIncreaseButton = uploadWindow.querySelector('.scale__control--bigger');
+
+var getScaleInputValue = function () {
+  return scaleInput.value.slice(0, -1);
+};
+
+var setScaleEffect = function (scale) {
+  uploadImage.style.transform = 'scale(' + (scale / 100) + ')';
+};
+
+var setScale = function (scale) {
+  scaleInput.value = scale + '%';
+  setScaleEffect(scale);
+};
+
+setScale(SCALE_DEFAULT_VALUE);
+
+var onScaleDecreaseButtonClick = function () {
+  var currentValue = getScaleInputValue();
+
+  if (currentValue > SCALE_MIN_VALUE) {
+    var newScaleValue = currentValue - SCALE_STEP;
+    setScale(newScaleValue);
+  } else {
+    scaleDecreaseButton.removeEventListener('click', onScaleDecreaseButtonClick);
+  }
+};
+
+scaleDecreaseButton.addEventListener('click', onScaleDecreaseButtonClick);
+
+var onScaleIncreaseButtonClick = function () {
+  var currentValue = getScaleInputValue();
+
+  if (currentValue < SCALE_MAX_VALUE) {
+    var newScaleValue = parseInt(currentValue, 10) + SCALE_STEP;
+    setScale(newScaleValue);
+  } else {
+    scaleIncreaseButton.removeEventListener('click', onScaleIncreaseButtonClick);
+  }
+
+};
+
+scaleIncreaseButton.addEventListener('click', onScaleIncreaseButtonClick);
+
 // Наложение эффекта на изображение
-var uploadImage = document.querySelector('.img-upload__preview img');
+
 var effectsList = document.querySelector('.effects__list');
 var effectLevel = document.querySelector('.img-upload__effect-level');
 var effectLevelContainer = document.querySelector('.effect-level__line');
