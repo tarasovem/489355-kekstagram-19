@@ -179,10 +179,59 @@ scaleIncreaseButton.addEventListener('click', onScaleIncreaseButtonClick);
 
 // Наложение эффекта на изображение
 
+//  1. По умолчанию выбран оригинал;
+//  2. Если стоит "оригинал", скрывается слайдер, стили удаляются;
+//  3. Когда выбирается "эффект", значение радио меняется и на картинку вешается стиль;
+//  4. Если на кнопке слайдера кликнуть мышью, изменяется уровень насыщенности фильтра через стиль картинки
+//  4.1. Эффекты имеют:
+//    - название,
+//    - минимальное и максимальное значение,
+//    - значение свойства "filter"
+//    - единицы измерения
+
+var EFFECTS = {
+  chrome: {
+    min: 0,
+    max: 1,
+    precision: 2,
+    units: '',
+    filterName: 'grayscale'
+  },
+  sepia: {
+    min: 0,
+    max: 1,
+    precision: 2,
+    units: '',
+    filterName: 'sepia'
+  },
+  marvin: {
+    min: 0,
+    max: 100,
+    precision: 0,
+    units: '%',
+    filterName: 'invert'
+  },
+  phobos: {
+    min: 1,
+    max: 3,
+    precision: 1,
+    units: 'px',
+    filterName: 'blur'
+  },
+  heat: {
+    min: 1,
+    max: 3,
+    precision: 2,
+    units: '',
+    filterName: 'brightness'
+  }
+};
+
 var effectsList = document.querySelector('.effects__list');
 var effectLevel = document.querySelector('.img-upload__effect-level');
 var effectLevelContainer = document.querySelector('.effect-level__line');
 var effectLevelPin = document.querySelector('.effect-level__pin');
+var effect;
 
 var hideEffectLevel = function () {
   effectLevel.classList.add('hidden');
@@ -192,86 +241,59 @@ var showEffectLevel = function () {
   effectLevel.classList.remove('hidden');
 };
 
-var onEffectListChange = function (evt) {
-  var target = evt.target;
-  var value = target.value;
+var setEffect = function (name, level) {
+  var props = EFFECTS[name];
 
-  uploadImage.removeAttribute('class');
-  uploadImage.removeAttribute('style');
-
-  if (value !== 'none') {
-    uploadImage.classList.add('effects__preview--' + value);
+  if (!level) {
+    resetFilter();
+    uploadImage.classList.add('effects__preview--' + name);
+    uploadImage.style.filter = props.filterName + '(' + props.max + props.units + ')';
     showEffectLevel();
   } else {
-    hideEffectLevel();
+    uploadImage.style.filter = props.filterName + '(' + level + props.units + ')';
   }
+};
+
+var resetFilter = function () {
+  uploadImage.removeAttribute('class');
+  uploadImage.setAttribute('style', 'filter: none');
+};
+
+var getEffectName = function (evt) {
+  var target = evt.target;
+  return target.value;
+};
+
+var onFilterListChange = function (evt) {
+  effect = getEffectName(evt);
+
+  if (effect === 'none') {
+    hideEffectLevel();
+    resetFilter();
+  } else {
+    setEffect(effect);
+  }
+};
+
+var getCurrentLevelWidth = function (evt) {
+  var target = evt.target;
+
+  return getComputedStyle(target).left.slice(0, -2);
+};
+
+var getMaxLevelWidth = function () {
+  return getComputedStyle(effectLevelContainer).width.slice(0, -2);
 };
 
 var onEffectLevelPinMouseup = function (evt) {
-  var target = evt.target;
-  var width = getComputedStyle(target).left.slice(0, -2);
-  var maxWidth = getComputedStyle(effectLevelContainer).width.slice(0, -2);
-  var minEffectValue;
-  var maxEffectValue;
-  var currentEffectValue;
-  var precision;
-  var postfix = '';
-  var effectName;
+  var props = EFFECTS[effect];
 
-  var currentEffect = uploadImage.getAttribute('class');
+  var currentEffectValue = (((getCurrentLevelWidth(evt) * props.max - props.min) / getMaxLevelWidth()) + props.min).toFixed(props.precision);
 
-  switch (currentEffect) {
-    case 'effects__preview--chrome':
-      minEffectValue = 0;
-      maxEffectValue = 1;
-      precision = 2;
-      effectName = 'grayscale';
-      break;
-
-    case 'effects__preview--sepia':
-      minEffectValue = 0;
-      maxEffectValue = 1;
-      precision = 2;
-      effectName = 'sepia';
-      break;
-
-    case 'effects__preview--marvin':
-      minEffectValue = 0;
-      maxEffectValue = 100;
-      postfix = '%';
-      precision = 0;
-      effectName = 'invert';
-      break;
-
-    case 'effects__preview--phobos':
-      minEffectValue = 1;
-      maxEffectValue = 3;
-      precision = 1;
-      postfix = 'px';
-      effectName = 'blur';
-      break;
-
-    case 'effects__preview--heat':
-      minEffectValue = 1;
-      maxEffectValue = 3;
-      precision = 2;
-      effectName = 'brightness';
-      break;
-
-    default:
-      hideEffectLevel();
-      uploadImage.style.filter = 'none';
-  }
-
-  currentEffectValue = ((width * (maxEffectValue - minEffectValue) / maxWidth) + minEffectValue).toFixed(precision);
-
-  uploadImage.style.filter = effectName + '(' + currentEffectValue + postfix + ')';
+  setEffect(effect, currentEffectValue);
 };
 
-hideEffectLevel();
-
-effectsList.addEventListener('change', onEffectListChange);
-
+effectsList.addEventListener('change', onFilterListChange);
 effectLevelPin.addEventListener('mouseup', onEffectLevelPinMouseup);
 
 // валидация хеш-тегов
