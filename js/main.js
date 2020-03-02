@@ -97,14 +97,17 @@ var body = document.body;
 var openUploadWindow = function () {
   uploadWindow.classList.remove('hidden');
   body.classList.add('modal-open');
-  document.addEventListener('keydown', onUploadWindowEscPress);
+  document.addEventListener('keyup', onUploadWindowEscPress);
 };
 
 var closeUploadWindow = function () {
   uploadWindow.classList.add('hidden');
   body.classList.remove('modal-open');
   uploadFileButton.value = '';
-  document.removeEventListener('keydown', onUploadWindowEscPress);
+  document.removeEventListener('keyup', onUploadWindowEscPress);
+  resetFilter();
+  hideEffectLevel();
+  originEffectInput.checked = true;
 };
 
 var onUploadFileChange = function () {
@@ -156,8 +159,6 @@ var onScaleDecreaseButtonClick = function () {
   if (currentValue > SCALE_MIN_VALUE) {
     var newScaleValue = currentValue - SCALE_STEP;
     setScale(newScaleValue);
-  } else {
-    scaleDecreaseButton.removeEventListener('click', onScaleDecreaseButtonClick);
   }
 };
 
@@ -169,10 +170,7 @@ var onScaleIncreaseButtonClick = function () {
   if (currentValue < SCALE_MAX_VALUE) {
     var newScaleValue = parseInt(currentValue, 10) + SCALE_STEP;
     setScale(newScaleValue);
-  } else {
-    scaleIncreaseButton.removeEventListener('click', onScaleIncreaseButtonClick);
   }
-
 };
 
 scaleIncreaseButton.addEventListener('click', onScaleIncreaseButtonClick);
@@ -231,6 +229,7 @@ var effectsList = document.querySelector('.effects__list');
 var effectLevel = document.querySelector('.img-upload__effect-level');
 var effectLevelContainer = document.querySelector('.effect-level__line');
 var effectLevelPin = document.querySelector('.effect-level__pin');
+var originEffectInput = document.querySelector('#effect-none');
 var effect;
 
 var hideEffectLevel = function () {
@@ -256,7 +255,7 @@ var setEffect = function (name, level) {
 
 var resetFilter = function () {
   uploadImage.removeAttribute('class');
-  uploadImage.setAttribute('style', 'filter: none');
+  uploadImage.style.filter = 'none';
 };
 
 var getEffectName = function (evt) {
@@ -300,7 +299,10 @@ effectLevelPin.addEventListener('mouseup', onEffectLevelPinMouseup);
 var MAX_HASHTAGS_AMOUNT = 5;
 var MAX_HASHTAG_CHARACTERS = 20;
 var HASHTAG_PATTERN = /^([#]{1})([0-9a-zа-яё]{1,19})$/g;
+var MAX_DESCRIPTION_CHARACTERS = 140;
+
 var hashtagsInput = document.querySelector('.text__hashtags');
+var descriptionInput = document.querySelector('.text__description');
 
 var createHashtags = function (inputString) {
   return inputString.split(' ');
@@ -348,11 +350,15 @@ var createValidityMessages = function (notEmptyHashtags) {
   return validityMessages;
 };
 
-var onHashtagsKeyup = function () {
+var onHashtagsKeyup = function (evt) {
   var inputValue = hashtagsInput.value.toLowerCase();
   var dirtyHashtags = createHashtags(inputValue);
   var cleanHashtags = removeAdditionalSpaces(dirtyHashtags);
   var errors = createValidityMessages(cleanHashtags);
+
+  if (evt.key === ESC_KEY) {
+    evt.stopPropagation();
+  }
 
   if (errors.length !== 0) {
     hashtagsInput.setCustomValidity(errors.join(' \n'));
@@ -362,3 +368,20 @@ var onHashtagsKeyup = function () {
 };
 
 hashtagsInput.addEventListener('keyup', onHashtagsKeyup);
+
+
+var onDescriptionKeyup = function (evt) {
+  var inputValue = descriptionInput.value;
+
+  if (evt.key === ESC_KEY) {
+    evt.stopPropagation();
+  }
+
+  if (inputValue.length > MAX_DESCRIPTION_CHARACTERS) {
+    descriptionInput.setCustomValidity('Длина комментария не должна превышать ' + MAX_DESCRIPTION_CHARACTERS + ' символа');
+  } else {
+    descriptionInput.setCustomValidity('');
+  }
+};
+
+descriptionInput.addEventListener('keyup', onDescriptionKeyup);
