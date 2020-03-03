@@ -108,6 +108,7 @@ var closeUploadWindow = function () {
   resetFilter();
   hideEffectLevel();
   originEffectInput.checked = true;
+  setScaleEffect(SCALE_DEFAULT_VALUE);
 };
 
 var onUploadFileChange = function () {
@@ -176,16 +177,6 @@ var onScaleIncreaseButtonClick = function () {
 scaleIncreaseButton.addEventListener('click', onScaleIncreaseButtonClick);
 
 // Наложение эффекта на изображение
-
-//  1. По умолчанию выбран оригинал;
-//  2. Если стоит "оригинал", скрывается слайдер, стили удаляются;
-//  3. Когда выбирается "эффект", значение радио меняется и на картинку вешается стиль;
-//  4. Если на кнопке слайдера кликнуть мышью, изменяется уровень насыщенности фильтра через стиль картинки
-//  4.1. Эффекты имеют:
-//    - название,
-//    - минимальное и максимальное значение,
-//    - значение свойства "filter"
-//    - единицы измерения
 
 var EFFECTS = {
   chrome: {
