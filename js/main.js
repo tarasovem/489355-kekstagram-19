@@ -94,6 +94,14 @@ var uploadWindow = document.querySelector('.img-upload__overlay');
 var uploadImage = document.querySelector('.img-upload__preview img');
 var body = document.body;
 
+var resetForm = function () {
+  uploadFileButton.value = '';
+  resetFilter();
+  hideEffectLevel();
+  originEffectInput.checked = true;
+  setScale(SCALE_DEFAULT_VALUE);
+};
+
 var openUploadWindow = function () {
   uploadWindow.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -103,12 +111,8 @@ var openUploadWindow = function () {
 var closeUploadWindow = function () {
   uploadWindow.classList.add('hidden');
   body.classList.remove('modal-open');
-  uploadFileButton.value = '';
+  resetForm();
   document.removeEventListener('keyup', onUploadWindowEscPress);
-  resetFilter();
-  hideEffectLevel();
-  originEffectInput.checked = true;
-  setScaleEffect(SCALE_DEFAULT_VALUE);
 };
 
 var onUploadFileChange = function () {
